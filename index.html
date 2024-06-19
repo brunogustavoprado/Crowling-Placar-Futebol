@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogos Ao Vivo</title>
+    <style>
+        body {
+            background-color: #121212; /* Fundo escuro */
+            color: #ffffff; /* Texto branco */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            margin: 0;
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #liveMatches {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .match {
+            background-color: #1f1f1f; /* Fundo mais escuro */
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .team {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+        }
+
+        .team img {
+            width: 50px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .team.home {
+            color: #ff6f00; /* Laranja para o time da casa */
+        }
+
+        .team.away {
+            color: #03a9f4; /* Azul para o time visitante */
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff1744; /* Vermelho para o placar */
+        }
+
+        .vs {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 10px;
+            color: #ffffff;
+        }
+
+        /* Estilos para o título */
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Jogos Ao Vivo</h1>
+    <div id="liveMatches"></div>
+    <h1>Jogos De Hoje</h1>
+    <div id="dayGames"></div>
+</div>
+
+<script>
+    function fetchMatches() {
+        fetch('index.php')
+            .then(response => response.json())
+            .then(data => {
+                const liveMatches = document.getElementById('liveMatches');
+                liveMatches.innerHTML = '';
+
+                data.forEach(match => {
+                    const matchElement = document.createElement('div');
+                    matchElement.classList.add('match');
+                    matchElement.innerHTML = `
+                        <div class="timer">${match.date_time}</div>
+                        <div class="team home">
+                            <img src="${match.home_team_img}" alt="${match.home_team} logo">
+                            ${match.home_team}
+                        </div>
+                        <div class="score">${match.home_score == null ? '0' : match.home_score}</div>
+                        <div class="vs">X</div>
+                        <div class="score">${match.away_score == null ? '0' : match.away_score}</div>
+                        <div class="team away">
+                            <img src="${match.away_team_img}" alt="${match.away_team} logo">
+                            ${match.away_team}
+                        </div>
+                    `;
+                    liveMatches.appendChild(matchElement);
+                });
+            })
+            .catch(error => console.error('Erro ao buscar os dados:', error));
+    }
+
+    fetchMatches();
+    setInterval(fetchMatches, 5000);
+
+    //INTERVALO GERAL
+
+    function fetchMatchesDay() {
+        fetch('index2.php')
+            .then(response => response.json())
+            .then(data => {
+                const dayGames = document.getElementById('dayGames');
+                dayGames.innerHTML = '';
+
+                data.forEach(match => {
+                    const matchElement = document.createElement('div');
+                    matchElement.classList.add('match');
+                    matchElement.innerHTML = `
+                        <div class="timer">${match.date_time_day}</div>
+                        <div class="team home">
+                         <img src="${match.home_team_img}" alt="${match.home_team} logo">
+                            ${match.home_team_day}
+                        </div>
+                        <div class="vs">X</div>
+                        <div class="team away">
+               <img src="${match.home_team_img}" alt="${match.home_team} logo">
+                            ${match.away_team_day}
+                        </div>
+                    `;
+                    dayGames.appendChild(matchElement);
+                });
+            })
+            .catch(error => console.error('Erro ao buscar os dados:', error));
+    }
+
+    fetchMatchesDay();
+    setInterval(fetchMatchesDay, 5000);
+</script>
+</body>
+</html>
